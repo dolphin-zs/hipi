@@ -5,3 +5,5 @@
 /trash
 *.class
 *.jar
+/target/
+.settings/
