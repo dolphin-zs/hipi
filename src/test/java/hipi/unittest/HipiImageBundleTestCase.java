@@ -37,7 +37,7 @@ public class HipiImageBundleTestCase extends AbstractImageBundleTestCase {
 		//create image bundles
 		Configuration conf = new Configuration();
 		HipiImageBundle aib1 = new HipiImageBundle(new Path("/tmp/bundle1.hib"), conf);
-		aib1.open(AbstractImageBundle.FILE_MODE_WRITE, true);		
+		aib1.open(AbstractImageBundle.FILE_MODE_WRITE, true);
 		aib1.addImage(new FileInputStream("data/test/ImageBundleTestCase/read/0.jpg"), ImageType.JPEG_IMAGE);
 		aib1.addImage(new FileInputStream("data/test/ImageBundleTestCase/read/1.jpg"), ImageType.JPEG_IMAGE);
 		aib1.close();

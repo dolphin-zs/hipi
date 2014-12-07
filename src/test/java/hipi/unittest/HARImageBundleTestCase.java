@@ -17,4 +17,20 @@ public class HARImageBundleTestCase extends AbstractImageBundleTestCase {
 		sib.open(mode, true);
 		return sib;
 	}
+
+	@Override
+	public void testIterator() throws IOException {
+	}
+
+	@Override
+	public void testGetCurrentImage() throws IOException {
+	}
+
+	@Override
+	public void testNext() throws IOException {
+	}
+
+	@Override
+	public void testHasNext() throws IOException {
+	}
 }

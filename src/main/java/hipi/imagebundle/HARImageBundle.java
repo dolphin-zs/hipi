@@ -31,11 +31,11 @@ public class HARImageBundle extends AbstractImageBundle {
 	private FSDataInputStream _reader;
 	private FSDataOutputStream masterIndexStream = null;
 	private FSDataOutputStream indexStream = null;
-	
+
 	private byte _cacheData[];
 	private int _cacheType;
 	private ArrayList<HARIndexContainer> indexHash;
-	
+
 	public HARImageBundle(Path file_path, Configuration conf) {
 
 		super(file_path, conf);
@@ -47,8 +47,8 @@ public class HARImageBundle extends AbstractImageBundle {
 
 	@Override
 	protected void openForWrite() throws IOException {
-		_imageCount = 0;	
-		
+		_imageCount = 0;
+
 		indexHash = new ArrayList<HARIndexContainer>();
 		System.out.println("3: "+_file_path.toString());
 		Path tmpOutputDir = new Path(_file_path.toUri().getPath());
@@ -62,27 +62,27 @@ public class HARImageBundle extends AbstractImageBundle {
 				destFs.delete(tmpOutput, false);
 			}
 			_writer = destFs.create(tmpOutput);
-			
+
 		} catch(IOException e) {
 			throw new RuntimeException(e);
-		}		
+		}
 	}
 
 	@Override
 	protected void openForRead() throws IOException {
 	    _harfs = new HarFileSystem(FileSystem.get(_conf));
-	    
+
 	    //Path qualifiedPath = new Path("har://", input_file.toUri() +
 	    //	      Path.SEPARATOR + input_file.getParent().toUri().getPath());
 	    Path qualifiedPath = new Path("har://", _file_path.toUri().getPath());
 	    	      //Path.SEPARATOR + input_file.getParent().toUri().getPath());
-	    _harfs.initialize(qualifiedPath.toUri(), _conf);
-	    	    
+        _harfs.initialize(qualifiedPath.toUri(), _conf);
+
 	    _filesInHar = _harfs.listStatus(qualifiedPath);
 	    _imageCount = _filesInHar.length;
 		_current_image = 0;
 	}
-	
+
 	@Override
 	public void addImage(InputStream image_stream, ImageType type)
 	throws IOException {
@@ -96,17 +96,17 @@ public class HARImageBundle extends AbstractImageBundle {
 			byte[] data = new byte[image_stream.available()];
 			image_stream.read(data);
 			_writer.write(data);
-			filelen = Integer.SIZE + data.length; 
+			filelen = Integer.SIZE + data.length;
 		} finally {
 			image_stream.close();
 		}
 		Path relPath = new Path(src_path.toUri().getPath());
 		String partname = "part-0";
 		String value = relPath.toString() + " file " + partname + " " + writer_startPos + " " + filelen + " ";
-		
+
 		String towrite = value + "\n";
 		indexHash.add(new HARIndexContainer(hash, towrite));
-		
+
 		_imageCount++;
 	}
 
@@ -114,7 +114,7 @@ public class HARImageBundle extends AbstractImageBundle {
 	public long getImageCount() {
 		return _imageCount;
 	}
-	
+
 	@Override
 	protected ImageHeader readHeader() throws IOException {
 		if (_filesInHar != null) {
@@ -172,8 +172,8 @@ public class HARImageBundle extends AbstractImageBundle {
 			_writer.close();
 		}
 	}
-	
-	
+
+
 	private void closeIndex() throws IOException{
 		//write "root" dir for har
 		Path relPath = new Path(Path.SEPARATOR);
@@ -183,8 +183,8 @@ public class HARImageBundle extends AbstractImageBundle {
 		}
 		toWrite += "\n";
 		indexHash.add(new HARIndexContainer(HarFileSystem.getHarHash(relPath), toWrite));
-		
-		
+
+
 		// try to create index files
 		Path masterIndex = new Path(_file_path, "_masterindex");
 		Path index = new Path(_file_path, "_index");
@@ -199,7 +199,7 @@ public class HARImageBundle extends AbstractImageBundle {
 		masterIndexStream = fs.create(masterIndex);
 		String version = HarFileSystem.VERSION + " \n";
 		masterIndexStream.write(version.getBytes());
-		
+
 		long startPos = 0;
 		long startIndexHash = 0;
 		long endIndexHash = 0;
@@ -214,14 +214,14 @@ public class HARImageBundle extends AbstractImageBundle {
 			if (i >0 && i%1000 == 0) {
 				// every 1000 indexes we add a master index entry
 				endIndexHash = hash;
-				String masterWrite = startIndexHash + " " + endIndexHash + " " + startPos 
+				String masterWrite = startIndexHash + " " + endIndexHash + " " + startPos
 				+  " " + indexStream.getPos() + " \n" ;
 				masterIndexStream.write(masterWrite.getBytes());
 				startPos = indexStream.getPos();
 				startIndexHash = endIndexHash;
 			}
 		}
-		
+
 		if (i > 0 && i%1000 > 0) {
 			String masterWrite = startIndexHash + " " + hash + " " + startPos  +
 			" " + indexStream.getPos() + " \n";

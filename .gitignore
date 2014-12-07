@@ -7,3 +7,5 @@
 *.jar
 /target/
 .settings/
+tags
+debug

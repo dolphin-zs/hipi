@@ -18,13 +18,13 @@ import org.apache.hadoop.fs.Path;
 /**
  * Base class for all image bundles in HIPI. All subclasses must implement
  * methods to open, read, and close the image bundles.
- * 
+ *
  * This class can also be used to write an image bundle but image bundles have
  * to read and written sequentially. Thus, in order to create an image bundle,
  * you have to open a new file and then write the entire contents. Once you have
  * opened the file you cannot read anything from the file until you have closed
  * it.
- * 
+ *
  */
 public abstract class AbstractImageBundle {
 
@@ -42,7 +42,7 @@ public abstract class AbstractImageBundle {
 	protected Path _file_path;
 
 	/**
-	 * 
+	 *
 	 * @param file_path The {@link Path} indicating where the image bundle is (or should be written to)
 	 * @param conf {@link Configuration} that determines the {@link FileSystem} for the image bundle
 	 */
@@ -58,7 +58,7 @@ public abstract class AbstractImageBundle {
 	/**
 	 * Opens a file for either reading or writing. This method will return an
 	 * IOException if an open call has already happened.
-	 * 
+	 *
 	 * @param mode
 	 *            determines whether the file will be read from or written to
 	 * @param overwrite
@@ -69,7 +69,7 @@ public abstract class AbstractImageBundle {
 	 */
 	public final void open(int mode, boolean overwrite) throws IOException {
 
-		if (_fileMode == -1 && mode == FILE_MODE_WRITE) {			
+		if (_fileMode == -1 && mode == FILE_MODE_WRITE) {
 			// Check to see whether the file exists
 			if (FileSystem.get(_conf).exists(_file_path) && !overwrite) {
 				throw new IOException("File " + _file_path.getName()
@@ -93,7 +93,7 @@ public abstract class AbstractImageBundle {
 	 * Method for opening a file for the purposes of writing. The function
 	 * {@link #open(int)} contains the necessary
 	 * checks to determine whether a file can be opened for writing.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	protected abstract void openForWrite() throws IOException;
@@ -102,7 +102,7 @@ public abstract class AbstractImageBundle {
 	 * Method for opening a file for the purposes of reading. The function
 	 * {@link #open(int)} contains the necessary
 	 * checks to determine whether a file can be opened for reading.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	protected abstract void openForRead() throws IOException;
@@ -110,17 +110,17 @@ public abstract class AbstractImageBundle {
 	/**
 	 * Add an image to this bundle. Some implementations may not actually write
 	 * the data to the file system until after close has been called.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public final void addImage(FloatImage image) throws IOException {
 		addImage(image, JPEGImageUtil.getInstance());
 	}
-	
+
 	public final void addImage(FloatImage image, ImageEncoder encoder) throws IOException {
 		addImage(image, encoder, encoder.createSimpleHeader(image));
 	}
-	
+
 	public final void addImage(FloatImage image, ImageEncoder encoder, ImageHeader header) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -128,7 +128,7 @@ public abstract class AbstractImageBundle {
 
 		addImage(new ByteArrayInputStream(baos.toByteArray()), header.getImageType());
 	}
-	
+
 	public abstract void addImage(InputStream image_stream, ImageType type) throws IOException;
 
 	/**
@@ -138,30 +138,30 @@ public abstract class AbstractImageBundle {
 
 	/**
 	 * Return the path to the index file
-	 * 
+	 *
 	 * @return Path path to index file
 	 */
 	public Path getPath(){
 		return _file_path;
 	}
-	
+
 	/**
 	 * Reads the next image and stores it in a cache. Does not decode the image from the image bundle
 	 * @return denote if has next or not
 	 */
 	protected abstract boolean prepareNext();
-	
+
 	/**
-	 * @return the decoded ImageHeader from the cache that has been prepared. Will not advance the 
+	 * @return the decoded ImageHeader from the cache that has been prepared. Will not advance the
 	 * bundle to the next image upon return
 	 * @throws IOException
 	 */
 	protected abstract ImageHeader readHeader() throws IOException;
-	
+
 	/**
-	 * @return the decoded FloatImage from the cache that has been prepared. Will not advance the 
+	 * @return the decoded FloatImage from the cache that has been prepared. Will not advance the
 	 * bundle to the next image upon return
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	protected abstract FloatImage readImage() throws IOException;
@@ -186,7 +186,7 @@ public abstract class AbstractImageBundle {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the FloatImage of the image at the current position in the image bundle
 	 * @throws IOException
 	 */
@@ -212,7 +212,7 @@ public abstract class AbstractImageBundle {
 	/**
 	 * Closes the underlying stream for this bundle. In some implementations, no
 	 * data is written to the output stream unless this function is called.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public abstract void close() throws IOException;
